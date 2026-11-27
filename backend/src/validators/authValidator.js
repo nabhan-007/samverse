@@ -33,4 +33,11 @@ const validateRegister = ({
   return errors;
 };
 
-module.exports = { validateRegister };
+const validateLogin = ({ email, password }) => {
+  const errors = {};
+  if (!email || !isEmail(email)) errors.email = "Enter a valid email address";
+  if (!password) errors.password = "Password is required";
+  return errors;
+};
+
+module.exports = { validateRegister, validateLogin };
