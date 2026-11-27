@@ -40,4 +40,23 @@ const validateLogin = ({ email, password }) => {
   return errors;
 };
 
-module.exports = { validateRegister, validateLogin };
+const validateVerifyOtp = ({ email, code }) => {
+  const errors = {};
+  if (!email || !isEmail(email)) errors.email = "Enter a valid email address";
+  if (!code || !/^\d{6}$/.test(String(code)))
+    errors.code = "Enter the 6-digit code";
+  return errors;
+};
+
+const validateEmailOnly = ({ email }) => {
+  const errors = {};
+  if (!email || !isEmail(email)) errors.email = "Enter a valid email address";
+  return errors;
+};
+
+module.exports = {
+  validateRegister,
+  validateLogin,
+  validateVerifyOtp,
+  validateEmailOnly,
+};
