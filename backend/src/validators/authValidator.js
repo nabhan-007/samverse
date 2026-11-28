@@ -1,5 +1,14 @@
 const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const isPhone = (v) => /^\+91[6-9]\d{9}$/.test(v);
+const isCode = (v) => /^\d{6}$/.test(String(v));
+
+const passwordError = (password) => {
+  if (!password || password.length < 8)
+    return "Password must be at least 8 characters";
+  if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password))
+    return "Use upper case, lower case and a number";
+  return "";
+};
 
 const validateRegister = ({
   name,
@@ -18,14 +27,8 @@ const validateRegister = ({
   if (!phone || !isPhone(phone))
     errors.phone = "Enter a valid +91 mobile number";
 
-  if (!password || password.length < 8)
-    errors.password = "Password must be at least 8 characters";
-  else if (
-    !/[A-Z]/.test(password) ||
-    !/[a-z]/.test(password) ||
-    !/\d/.test(password)
-  )
-    errors.password = "Use upper case, lower case and a number";
+  const pwError = passwordError(password);
+  if (pwError) errors.password = pwError;
 
   if (password !== confirmPassword)
     errors.confirmPassword = "Passwords do not match";
@@ -43,8 +46,7 @@ const validateLogin = ({ email, password }) => {
 const validateVerifyOtp = ({ email, code }) => {
   const errors = {};
   if (!email || !isEmail(email)) errors.email = "Enter a valid email address";
-  if (!code || !/^\d{6}$/.test(String(code)))
-    errors.code = "Enter the 6-digit code";
+  if (!isCode(code)) errors.code = "Enter the 6-digit code";
   return errors;
 };
 
@@ -54,9 +56,24 @@ const validateEmailOnly = ({ email }) => {
   return errors;
 };
 
+const validateNewPassword = ({ email, code, password, confirmPassword }) => {
+  const errors = {};
+  if (!email || !isEmail(email)) errors.email = "Enter a valid email address";
+  if (!isCode(code)) errors.code = "Enter the 6-digit code";
+
+  const pwError = passwordError(password);
+  if (pwError) errors.password = pwError;
+
+  if (password !== confirmPassword)
+    errors.confirmPassword = "Passwords do not match";
+
+  return errors;
+};
+
 module.exports = {
   validateRegister,
   validateLogin,
   validateVerifyOtp,
   validateEmailOnly,
+  validateNewPassword,
 };
