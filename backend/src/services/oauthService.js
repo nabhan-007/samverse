@@ -6,6 +6,9 @@ const { signToken } = require("../utils/token");
 const API_URL = () => process.env.API_URL || "http://localhost:5000";
 const FRONTEND_URL = () => process.env.FRONTEND_URL || "http://localhost:5173";
 
+// v19.0 expired 2026-05-21; v26.0 is the current Graph API version.
+const GRAPH_VERSION = "v26.0";
+
 const providers = {
   google: {
     authUrl: "https://accounts.google.com/o/oauth2/v2/auth",
@@ -23,14 +26,14 @@ const providers = {
     },
   },
   facebook: {
-    authUrl: "https://www.facebook.com/v19.0/dialog/oauth",
-    tokenUrl: "https://graph.facebook.com/v19.0/oauth/access_token",
+    authUrl: `https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`,
+    tokenUrl: `https://graph.facebook.com/${GRAPH_VERSION}/oauth/access_token`,
     scope: "email",
     clientId: () => process.env.FACEBOOK_APP_ID,
     clientSecret: () => process.env.FACEBOOK_APP_SECRET,
     async profile(accessToken) {
       const res = await fetch(
-        `https://graph.facebook.com/me?fields=id,name,email&access_token=${accessToken}`,
+        `https://graph.facebook.com/${GRAPH_VERSION}/me?fields=id,name,email&access_token=${accessToken}`,
       );
       if (!res.ok) throw new Error("Facebook profile request failed");
       const data = await res.json();
@@ -73,10 +76,17 @@ const exchangeCode = async (provider, code) => {
     grant_type: "authorization_code",
   });
 
-  const res = await fetch(`${p.tokenUrl}?${params.toString()}`);
+  // Google's token endpoint rejects GET (404); POST form body works for both providers.
+  const res = await fetch(p.tokenUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params,
+  });
   const data = await res.json();
   if (!res.ok || !data.access_token)
-    throw new Error(data.error_description || data.error || "Token exchange failed");
+    throw new Error(
+      data.error_description || data.error?.message || data.error || "Token exchange failed",
+    );
 
   return data.access_token;
 };
