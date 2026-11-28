@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { setAuth } from "../api/auth";
 import AuthLayout from "../components/AuthLayout";
 import SsoButtons from "../components/SsoButtons";
 
@@ -19,8 +20,7 @@ export default function SignIn() {
     setLoading(true);
     try {
       const { data } = await api.post("/user/auth/login", form);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      setAuth(data.token, data.user);
       navigate("/");
     } catch (err) {
       const errors = err.response?.data?.errors;

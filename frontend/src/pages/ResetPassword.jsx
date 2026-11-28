@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { setAuth } from "../api/auth";
 import AuthLayout from "../components/AuthLayout";
 import OtpInput from "../components/OtpInput";
 import useCountdown, { clock } from "../hooks/useCountdown";
@@ -55,8 +56,7 @@ export default function ResetPassword() {
         password,
         confirmPassword,
       });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      setAuth(data.token, data.user);
       navigate("/");
     } catch (err) {
       const fieldErrors = err.response?.data?.errors;

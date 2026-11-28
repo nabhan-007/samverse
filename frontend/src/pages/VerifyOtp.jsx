@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { setAuth } from "../api/auth";
 import AuthLayout from "../components/AuthLayout";
 import OtpInput from "../components/OtpInput";
 import useCountdown, { clock } from "../hooks/useCountdown";
@@ -34,8 +35,7 @@ export default function VerifyOtp() {
     setInfo("");
     try {
       const { data } = await api.post("/user/auth/verifyotp", { email, code });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      setAuth(data.token, data.user);
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Verification failed");

@@ -7,6 +7,7 @@ import SignUp from "./pages/SignUp";
 import VerifyOtp from "./pages/VerifyOtp";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/verify-otp" element={<VerifyOtp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
         <Footer />
