@@ -15,6 +15,7 @@ const {
   newPassword,
   login,
 } = require("../controllers/authController");
+const oauth = require("../controllers/oauthController");
 
 const router = express.Router();
 
@@ -24,5 +25,10 @@ router.post("/resendotp", validate(validateEmailOnly), resendOtp);
 router.post("/forgotpassword", validate(validateEmailOnly), forgotPassword);
 router.post("/newpassword", validate(validateNewPassword), newPassword);
 router.post("/login", validate(validateLogin), login);
+
+router.get("/google", oauth.start("google"));
+router.get("/google/callback", oauth.callback("google"));
+router.get("/facebook", oauth.start("facebook"));
+router.get("/facebook/callback", oauth.callback("facebook"));
 
 module.exports = router;
