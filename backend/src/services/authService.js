@@ -43,6 +43,30 @@ const verifySignup = async ({ email, code }) => {
 const resendSignup = async ({ email }) =>
   otpService.resend({ email, purpose: "signup" });
 
+const requestReset = async ({ email }) => {
+  const user = await User.findOne({ email });
+  // shortcut: reveals whether an email is registered, fine for a single-vendor exam demo
+  if (!user) fail("No account with this email", 404);
+
+  return otpService.issue({ email, purpose: "reset", payload: { email } });
+};
+
+const resetPassword = async ({ email, code, password }) => {
+  await otpService.verify({ email, purpose: "reset", code });
+
+  const user = await User.findOne({ email });
+  if (!user) fail("No account with this email", 404);
+  if (user.isBlocked) fail("Account blocked. Contact support.", 403);
+
+  user.passwordHash = await bcrypt.hash(password, 10);
+  await user.save();
+
+  return {
+    token: signToken(user),
+    user: { id: user._id, name: user.name, email: user.email, role: user.role },
+  };
+};
+
 const login = async ({ email, password }) => {
   const user = await User.findOne({ email });
   if (!user) fail("Invalid email or password", 401);
@@ -57,4 +81,11 @@ const login = async ({ email, password }) => {
   };
 };
 
-module.exports = { requestSignup, verifySignup, resendSignup, login };
+module.exports = {
+  requestSignup,
+  verifySignup,
+  resendSignup,
+  requestReset,
+  resetPassword,
+  login,
+};

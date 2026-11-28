@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import useAuth from "../api/auth";
 
 const SearchIcon = () => (
   <svg
@@ -42,6 +43,8 @@ const CartIcon = () => (
 );
 
 export default function Header() {
+  const user = useAuth();
+
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
       <div className="mx-auto flex h-14 w-full items-center gap-4 px-4 md:h-16 md:gap-10 md:px-12">
@@ -76,10 +79,19 @@ export default function Header() {
             <CartIcon />
           </Link>
           <Link
-            to="/signin"
-            className="text-[15px] font-medium text-brand hover:underline"
+            to={user ? "/profile" : "/signin"}
+            className="flex items-center gap-2 text-[15px] font-medium text-brand hover:underline"
           >
-            Sign In
+            {user ? (
+              <>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-slate-200 text-xs font-bold text-slate-700">
+                  {user.name?.slice(0, 2).toUpperCase()}
+                </span>
+                <span className="hidden sm:inline">{user.name?.split(" ")[0]}</span>
+              </>
+            ) : (
+              "Sign In"
+            )}
           </Link>
         </nav>
       </div>
