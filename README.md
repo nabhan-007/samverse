@@ -39,10 +39,16 @@ Seed the admin account once:
 
 ```powershell
 cd backend
-node src/scripts/seedAdmin.js
+node src/utils/seedAdmin.js
 ```
 
 Admin demo login: `admin@samverse.in` / `Admin@1234`
+
+Optional — 9 demo users so the admin table has a second page:
+
+```powershell
+node src/utils/seedDemoUsers.js
+```
 
 ## Environment
 
